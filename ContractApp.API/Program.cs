@@ -1,3 +1,4 @@
+using ContractApp.API;
 using ContractApp.API.DB;
 using ContractApp.API.Repositories;
 using ContractApp.API.Repositories.Impl;
@@ -17,7 +18,10 @@ builder.Services.AddScoped<ICabangRepository, CabangRepositoryImpl>();
 
 builder.Services.AddScoped<IPegawaiService, PegawaiServiceImpl>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ExceptionFilter>();
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

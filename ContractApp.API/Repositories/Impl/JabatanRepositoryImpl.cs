@@ -1,14 +1,20 @@
-﻿using ContractApp.API.Models.Entities;
+﻿using ContractApp.API.DB;
+using ContractApp.API.Models.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace ContractApp.API.Repositories.Impl
 {
     public class JabatanRepositoryImpl : IJabatanRepository
     {
-        public JabatanRepositoryImpl() { }
-
-        public Task Add(Jabatan entity)
+        private readonly AppDbContext _context;
+        public JabatanRepositoryImpl(AppDbContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
+        }
+
+        public async Task Add(Jabatan entity)
+        {
+            _context.Jabatans.Add(entity);
         }
 
         public Task Delete(string id)
@@ -16,14 +22,15 @@ namespace ContractApp.API.Repositories.Impl
             throw new NotImplementedException();
         }
 
-        public Task<Jabatan?> GetById(string id)
+        public async Task<Jabatan?> GetById(string id)
         {
-            throw new NotImplementedException();
+            return await _context.Jabatans
+                .FirstOrDefaultAsync(t => t.KodeJabatan == id);
         }
 
-        public Task Update(Jabatan entity)
+        public async Task Update(Jabatan entity)
         {
-            throw new NotImplementedException();
+            _context.Jabatans.Update(entity);
         }
     }
 }

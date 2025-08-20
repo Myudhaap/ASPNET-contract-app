@@ -16,7 +16,6 @@ namespace ContractApp.API.Repositories.Impl
         public async Task Add(Cabang entity)
         {
             _context.Cabangs.Add(entity);
-            await _context.SaveChangesAsync();
         }
 
         public async Task Delete(string id)
@@ -38,7 +37,6 @@ namespace ContractApp.API.Repositories.Impl
         public async Task Update(Cabang entity)
         {
             _context.Cabangs.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

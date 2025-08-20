@@ -15,9 +15,10 @@ namespace ContractApp.API.Repositories.Impl
             _context = context;
         }
 
-        public Task Add(Pegawai entity)
+        public async Task Add(Pegawai entity)
         {
-            throw new NotImplementedException();
+            _context.Pegawais.Add(entity);
+            await _context.SaveChangesAsync();
         }
 
         public Task Delete(string id)
@@ -59,14 +60,16 @@ namespace ContractApp.API.Repositories.Impl
             return result;
         }
 
-        public Task<Pegawai?> GetById(string id)
+        public async Task<Pegawai?> GetById(string id)
         {
-            throw new NotImplementedException();
+            return await _context.Pegawais
+                .FirstOrDefaultAsync(t => t.KodePegawai == id);
         }
 
-        public Task Update(Pegawai entity)
+        public async Task Update(Pegawai entity)
         {
-            throw new NotImplementedException();
+            _context.Pegawais.Update(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace ContractApp.API.Models.Entities
     {
         [Key]
         [Column("kode_pegawai")]
-        public int KodePegawai { get; set; }
+        public string KodePegawai { get; set; }
 
         [Column("nama_pegawai")]
         [MaxLength(255)]

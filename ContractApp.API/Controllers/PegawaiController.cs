@@ -1,4 +1,6 @@
-﻿using ContractApp.API.Services;
+﻿using ContractApp.API.Commons;
+using ContractApp.API.Models.DTOs;
+using ContractApp.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContractApp.API.Controllers
@@ -21,7 +23,18 @@ namespace ContractApp.API.Controllers
         )
         {
             var data = await _pegawaiService.FindListPegawai(startDate, endDate);
-            return Ok(data);
+            var response = new BaseResponse<IEnumerable<PegawaiRes>>("Success get pegawai", 200, data);
+            return Ok(response);
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadExcel(
+            IFormFile file
+        )
+        {
+            var data = await _pegawaiService.SaveExcelPegawai(file);
+            var response = new BaseResponse<IEnumerable<PegawaiExcelRes>>("Success upload excel pegawai", 201, data);
+            return Ok(response);
         }
     }
 }
