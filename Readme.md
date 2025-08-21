@@ -48,7 +48,17 @@ dotner run
 Dont forget to change config of project with your environment
 ## Demo
 
-![Alt text](./Dashboard_Page)
+Dashoard
+![Dashboard](Dashboard_Page.png)
+
+Sidebar
+![Sidebar](Sidebar_Page.png)
+
+Employee
+![Employee](Pegawai_Page.png)
+
+Employee Upload
+![Employee Upload](Pegawai_Upload_Page.png)
 
 ## License
 
