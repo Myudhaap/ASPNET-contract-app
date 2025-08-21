@@ -1,7 +1,13 @@
+using ContractApp.WebApp.Config;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.Configure<ApiSettings>(
+    builder.Configuration.GetSection("ApiSettings")
+);
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

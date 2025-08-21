@@ -3,3 +3,17 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
+
+<div class="d-flex gap-5 flex-wrap">
+    <div class="position-relative card-dashboard flex-grow-1 d-flex flex-column justify-content-between bg-white p-4 rounded-3 shadow-sm">
+        <h3 class="fs-5 fw-bold">Pegawai Active</h3>
+        <span class="text-primary fw-bold fs-2">@Model.PegawaiCount.Active</span>
+        <i class="position-absolute fa-solid fa-person"></i>
+    </div>
+
+    <div class="position-relative card-dashboard flex-grow-1 d-flex flex-column justify-content-between bg-white p-4 rounded-3 shadow-sm">
+        <h3 class="fs-5 fw-bold">Pegawai InActive</h3>
+        <span class="text-primary fw-bold fs-2">@Model.PegawaiCount.NotActive</span>
+        <i class="position-absolute fa-solid fa-person"></i>
+    </div>
+</div>

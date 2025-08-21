@@ -6,6 +6,8 @@ namespace ContractApp.API.Repositories
     public interface IPegawaiRepository
     {
         Task<IEnumerable<PegawaiRes>> GetAllProcedure(DateOnly? startDate, DateOnly? endDate);
+        Task<int> GetCountActive();
+        Task<int> GetCountInActive();
         Task<Pegawai?> GetById(string id);
         Task Add(Pegawai entity);
         Task Update(Pegawai entity);

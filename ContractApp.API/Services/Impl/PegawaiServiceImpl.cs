@@ -22,6 +22,18 @@ namespace ContractApp.API.Services.Impl
             _cabangRepository = cabangRepository;
         }
 
+        public async Task<PegawaiCountRes> CountPegawai()
+        {
+            int countActive = await _pegawaiRepository.GetCountActive();
+            int countInActive = await _pegawaiRepository.GetCountInActive();
+
+            return new PegawaiCountRes
+            {
+                Active = countActive,
+                NotActive = countInActive
+            };
+        }
+
         public Task<IEnumerable<PegawaiRes>> FindListPegawai(DateOnly? startDate, DateOnly? endDate)
         {
             return _pegawaiRepository.GetAllProcedure(startDate, endDate);

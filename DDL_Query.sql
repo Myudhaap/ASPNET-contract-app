@@ -24,4 +24,6 @@ CREATE TABLE mst_pegawai (
 		ON DELETE CASCADE
 );
 
+-- DROP PROCEDURE GetPegawai;
+
 -- EXEC GetPegawai @start_date='2024-08-05', @end_date='2026-08-05';
