@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Pegawai";
 }
+@inject IOptions<ApiSettings> ApiOptions
 
 <div class="bg-white p-3 rounded-2 shadow-sm">
     <h4 class="fs-5 mb-3">List Pegawai</h4>
@@ -38,6 +39,7 @@
                 <th class="text-center" scope="col">Nama Jabatan</th>
                 <th class="text-center" scope="col">Tanggal Mulai Kontrak</th>
                 <th class="text-center" scope="col">Tanggal Berhenti Kontrak</th>
+                <th class="text-center" scope="col">Catatan</th>
             </tr>
         </thead>
         <tbody id="dataBody">
@@ -50,7 +52,7 @@
     <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Upload Pegawai</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -83,38 +85,130 @@
 
 @section Scripts {
 <script>
-        async function loadData(startDate = null, endDate=null) {
-            console.log({endDate})
+    async function loadData(startDate = null, endDate=null) {
+        console.log({endDate})
             
-            const rawParams = {
-                "start-date": startDate,
-                "end-date": endDate
+        const rawParams = {
+            "start-date": startDate,
+            "end-date": endDate
+        }
+
+        const params = new URLSearchParams(
+            Object.entries(rawParams)
+                .filter(([_, v]) => v != null && v != '') 
+        )
+
+        try {
+            let res = await fetch(`@ApiOptions.Value.BaseUrl/api/v1/pegawai${'?' + params.toString()}`);
+            if (!res.ok) {
+                console.error("Gagal load data");
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Error...",
+                    text: "Terjadi kesalahan saat get data pegawai!"
+                });
+                noDataPegawai();
             }
+            let data = await res.json();
 
-            const params = new URLSearchParams(
-                Object.entries(rawParams)
-                    .filter(([_, v]) => v != null && v != '') 
-            )
+            let tbody = document.getElementById("dataBody");
+            tbody.innerHTML = "";
 
-            try {
-                let res = await fetch(`http://localhost:5009/api/v1/pegawai${'?' + params.toString()}`);
-                if (!res.ok) {
-                    console.error("Gagal load data");
+            if (data.data.length > 0) {
+                data.data.forEach((item, index) => {
+                    const remindDays = getReminderDay(item.endContract);
+                    console.log({remindDays})
+                    let row = `
+                        <tr>
+                            <td class="text-center">${index + 1}</td>
+                            <td>${item.kodePegawai}</td>
+                            <td>${item.namaPegawai}</td>
+                            <td>${item.kodeCabang}</td>
+                            <td>${item.namaCabang}</td>
+                            <td>${item.kodeJabatan}</td>
+                            <td>${item.namaJabatan}</td>
+                            <td class="text-end">${item.startContract}</td>
+                            <td class="text-end">${item.endContract}</td>
+                            <td class="text-center"><span class="text-center text-white fs-6 fw-bold py-1 px-2 rounded-2 ${
+                                    remindDays < 0 ? "bg-danger" : remindDays < 7  ? "bg-warning" : "bg-success"
+                            }">${getReminderStatus(remindDays)}</span></td>
+                        </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                noDataPegawai();
+            }
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Error...",
+                text: "Terjadi kesalahan saat get data pegawai!"
+            });
+            noDataPegawai();
+        }
+    }
 
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error...",
-                        text: "Terjadi kesalahan saat get data pegawai!"
-                    });
-                    noDataPegawai();
+    document.getElementById("filterForm").addEventListener("submit", function (e) {
+        e.preventDefault(); 
+
+        const start = document.getElementById("startDate").value;
+        const end   = document.getElementById("endDate").value;
+
+        loadData(start, end);
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", function () {
+        document.getElementById("startDate").value = "";
+        document.getElementById("endDate").value = "";
+
+        loadData();
+    });
+
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+
+    uploadBtn.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+
+            Swal.fire({
+                title: "Information",
+                text: "Mengunggah file ini akan memperbarui data pegawai yang sudah ada di sistem jika ditemukan kode pegawai yang sama.",
+                showCancelButton: true,
+                confirmButtonText: "Submit",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                loadModalUpload(fileInput.files[0]);
                 }
+            });
+
+                
+        }
+    });
+
+    async function loadModalUpload(file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch("@ApiOptions.Value.BaseUrl/api/v1/pegawai/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            if (res.ok) {
                 let data = await res.json();
 
-                let tbody = document.getElementById("dataBody");
+                let tbody = document.getElementById("dataBodyUpload");
                 tbody.innerHTML = "";
 
                 if (data.data.length > 0) {
                     data.data.forEach((item, index) => {
+                        
                         let row = `
                             <tr>
                                 <td class="text-center">${index + 1}</td>
@@ -126,151 +220,88 @@
                                 <td>${item.namaJabatan}</td>
                                 <td class="text-end">${item.startContract}</td>
                                 <td class="text-end">${item.endContract}</td>
+                                <td class="text-center"><span class="text-center text-white fs-6 fw-bold py-1 px-2 rounded-2 ${
+                                    item.status === "Failed" ? "bg-danger" : item.status === "Created" ? "bg-success" : "bg-primary"
+                                }">${item.status}</span></td>
                             </tr>`;
                         tbody.innerHTML += row;
                     });
                 } else {
-                    noDataPegawai();
+                    noDataPegawaiUpload();
                 }
-            } catch (err) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error...",
-                    text: "Terjadi kesalahan saat get data pegawai!"
-                });
-                noDataPegawai();
+
+                const modal = new bootstrap.Modal(document.getElementById("uploadModal"));
+                modal.show();
+
+                const start = document.getElementById("startDate").value;
+                const end   = document.getElementById("endDate").value;
+                loadData(start, end);
+
+                Swal.fire("Upload Success!", "", "success");
+            } else {
+                console.error("Upload gagal: " + res.statusText);
+                throw new Error()
             }
+        } catch (err) {
+            Swal.fire({
+                icon: "error",
+                title: "Error...",
+                text: "Terjadi kesalahan saat upload!"
+            });
+            noDataPegawaiUpload();
         }
 
-        document.getElementById("filterForm").addEventListener("submit", function (e) {
-            e.preventDefault(); 
+        fileInput.value = "";
+    }
 
-            const start = document.getElementById("startDate").value;
-            const end   = document.getElementById("endDate").value;
+    function noDataPegawai() {
+        let tbody = document.getElementById("dataBody");
+        tbody.innerHTML = "";
 
-            loadData(start, end);
-        });
+        let row = `
+            <tr>
+                <td class="text-center fw-bold" colspan="10">Data not found!</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        return;
+    }
 
-        document.getElementById("clearBtn").addEventListener("click", function () {
-            document.getElementById("startDate").value = "";
-            document.getElementById("endDate").value = "";
+    function noDataPegawaiUpload() {
+        let tbody = document.getElementById("dataBodyUpload");
+        tbody.innerHTML = "";
 
-            loadData();
-        });
+        let row = `
+            <tr>
+                <td class="text-center fw-bold" colspan="11">Data not found!</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        return;
+    }
 
-        const uploadBtn = document.getElementById("uploadBtn");
-        const fileInput = document.getElementById("fileInput");
+    function getReminderDay(target) {
+        const now = dayjs();
+        const targetDate = dayjs(target);
+        const diff = targetDate.diff(now, 'day');
 
-        uploadBtn.addEventListener("click", () => {
-            fileInput.click();
-        });
+        return diff
+    }
 
-        fileInput.addEventListener("change", () => {
-            if (fileInput.files.length > 0) {
-
-                Swal.fire({
-                  title: "Information",
-                  text: "Mengunggah file ini akan memperbarui data pegawai yang sudah ada di sistem jika ditemukan kode pegawai yang sama.",
-                  showCancelButton: true,
-                  confirmButtonText: "Submit",
-                }).then((result) => {
-                  if (result.isConfirmed) {
-                    loadModalUpload(fileInput.files[0]);
-                  }
-                });
-
-                
-            }
-        });
-
-        async function loadModalUpload(file) {
-            const formData = new FormData();
-            formData.append("file", file);
-
-            try {
-                const res = await fetch("http://localhost:5009/api/v1/pegawai/upload", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (res.ok) {
-                    let data = await res.json();
-
-                    let tbody = document.getElementById("dataBodyUpload");
-                    tbody.innerHTML = "";
-
-                    if (data.data.length > 0) {
-                        data.data.forEach((item, index) => {
-                            const styleStatus = ``
-                            let row = `
-                                <tr>
-                                    <td class="text-center">${index + 1}</td>
-                                    <td>${item.kodePegawai}</td>
-                                    <td>${item.namaPegawai}</td>
-                                    <td>${item.kodeCabang}</td>
-                                    <td>${item.namaCabang}</td>
-                                    <td>${item.kodeJabatan}</td>
-                                    <td>${item.namaJabatan}</td>
-                                    <td class="text-end">${item.startContract}</td>
-                                    <td class="text-end">${item.endContract}</td>
-                                    <td class="text-center"><span class="text-center text-white fs-6 fw-bold py-1 px-2 rounded-2 ${
-                                        item.status === "Failed" ? "bg-danger" : item.status === "Created" ? "bg-success" : "bg-primary"
-                                    }">${item.status}</span></td>
-                                </tr>`;
-                            tbody.innerHTML += row;
-                        });
-                    } else {
-                        noDataPegawaiUpload();
-                    }
-
-                    const modal = new bootstrap.Modal(document.getElementById("uploadModal"));
-                    modal.show();
-
-                    const start = document.getElementById("startDate").value;
-                    const end   = document.getElementById("endDate").value;
-                    loadData(start, end);
-
-                    Swal.fire("Upload Success!", "", "success");
-                } else {
-                    console.error("Upload gagal: " + res.statusText);
-                    throw new Error()
-                }
-            } catch (err) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Error...",
-                    text: "Terjadi kesalahan saat upload!"
-                });
-                noDataPegawaiUpload();
-            }
-
-            fileInput.value = "";
+    function getReminderStatus(diff) {
+        if (diff >= 365) {
+            return Math.floor(diff / 365) + ' Tahun Lagi'
+        } else if (diff >= 31) {
+            return Math.floor(diff / 31) + ' Bulan Lagi'
+        } else if (diff >= 7) {
+            return Math.floor(diff / 7) + ' Minggu Lagi'
+        } else if (diff > 1) {
+            return diff + ' Hari Lagi'
+        } else if (diff == 1) {
+            return 'Hari ini'
+        } else {
+            return 'Kontrak Selesai'
         }
+    }
 
-        function noDataPegawai() {
-            let tbody = document.getElementById("dataBody");
-            tbody.innerHTML = "";
-
-            let row = `
-                <tr>
-                    <td class="text-center fw-bold" colspan="10">Data not found!</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            return;
-        }
-
-        function noDataPegawaiUpload() {
-            let tbody = document.getElementById("dataBodyUpload");
-            tbody.innerHTML = "";
-
-            let row = `
-                <tr>
-                    <td class="text-center fw-bold" colspan="11">Data not found!</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            return;
-        }
-
-        loadData();
+    loadData();
 </script>
 }

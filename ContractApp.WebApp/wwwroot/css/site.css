@@ -25,3 +25,17 @@ main {
     background: var(--bs-primary);
     color: white !important;
 }
+
+.card-dashboard {
+    max-width: 20rem;
+    min-width: 20rem;
+    height: 12rem;
+    overflow: hidden;
+}
+
+.card-dashboard > i {
+    right: 0;
+    bottom: 0;
+    font-size: 7rem;
+    opacity: 0.2;
+}
