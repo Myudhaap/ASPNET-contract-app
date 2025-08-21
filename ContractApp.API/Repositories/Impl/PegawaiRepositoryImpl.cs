@@ -26,7 +26,7 @@ namespace ContractApp.API.Repositories.Impl
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<PegawaiRes>> GetAllProcedure(DateOnly startDate, DateOnly endDate)
+        public async Task<IEnumerable<PegawaiRes>> GetAllProcedure(DateOnly? startDate, DateOnly? endDate)
         {
             Console.WriteLine($"startDate: {startDate}, endDate: {endDate}");
             var result = new List<PegawaiRes>();

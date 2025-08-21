@@ -18,8 +18,8 @@ namespace ContractApp.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll(
-            [FromQuery(Name = "start_date")] DateOnly startDate,
-            [FromQuery(Name = "end_date")] DateOnly endDate
+            [FromQuery(Name = "start-date")] DateOnly? startDate,
+            [FromQuery(Name = "end-date")] DateOnly? endDate
         )
         {
             var data = await _pegawaiService.FindListPegawai(startDate, endDate);

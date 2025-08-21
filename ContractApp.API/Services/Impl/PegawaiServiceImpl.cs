@@ -22,7 +22,7 @@ namespace ContractApp.API.Services.Impl
             _cabangRepository = cabangRepository;
         }
 
-        public Task<IEnumerable<PegawaiRes>> FindListPegawai(DateOnly startDate, DateOnly endDate)
+        public Task<IEnumerable<PegawaiRes>> FindListPegawai(DateOnly? startDate, DateOnly? endDate)
         {
             return _pegawaiRepository.GetAllProcedure(startDate, endDate);
         }
@@ -90,7 +90,6 @@ namespace ContractApp.API.Services.Impl
                         {
                             currJabatan.NamaJabatan = namaJabatan;
                             await _jabatanRepository.Update(currJabatan);
-                            status = EStatus.Updated;
                         }
 
                         var currCabang = await _cabangRepository.GetById(kodeCabang);
@@ -107,7 +106,6 @@ namespace ContractApp.API.Services.Impl
                         {
                             currCabang.NamaCabang = namaCabang;
                             await _cabangRepository.Update(currCabang);
-                            status = EStatus.Updated;
                         }
 
                         var currPegawai = await _pegawaiRepository.GetById(kodePegawai);

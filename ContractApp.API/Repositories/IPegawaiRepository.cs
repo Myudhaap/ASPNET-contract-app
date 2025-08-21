@@ -5,7 +5,7 @@ namespace ContractApp.API.Repositories
 {
     public interface IPegawaiRepository
     {
-        Task<IEnumerable<PegawaiRes>> GetAllProcedure(DateOnly startDate, DateOnly endDate);
+        Task<IEnumerable<PegawaiRes>> GetAllProcedure(DateOnly? startDate, DateOnly? endDate);
         Task<Pegawai?> GetById(string id);
         Task Add(Pegawai entity);
         Task Update(Pegawai entity);

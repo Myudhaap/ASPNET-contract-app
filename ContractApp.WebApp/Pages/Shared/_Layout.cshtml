@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ContractApp.WebApp</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/sweetalert2/sweetalert2.min.css" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ContractApp.WebApp.styles.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column vh-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="container-fluid w-100 d-flex justify-content-between ps-4 pe-4">
+                <button class="btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="offcanvasScrolling">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <a class="navbar-brand fs-4" asp-area="" asp-page="/Index">Contract <span class="text-primary fw-bold">App</span></a>
+                <div>
+                    
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="sidebar" aria-labelledby="offcanvasScrollingLabel">
+        <div class="offcanvas-header">
+            <a class="offcanvas-title text-decoration-none text-black fs-4" id="offcanvasScrollingLabel" asp-area="" asp-page="/Index">Contract <span class="text-primary fw-bold">App</span></a>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <div class="d-flex flex-column gap-2">
+                <a class="sidebar-item d-flex align-items-center gap-2 nav-link fw-bold py-3 @(Context.Request.Path == "/" ? "bg-primary text-white fw-bold" : "text-dark")" asp-page="/Index"><i class="fa-solid fa-house"></i>Dashboard</a>
+                <a class="sidebar-item d-flex align-items-center gap-2 nav-link fw-bold py-3 @(Context.Request.Path == "/Pegawai" ? "bg-primary text-white fw-bold" : "text-dark")" asp-page="/Pegawai"><i class="fa-solid fa-people-group"></i>Pegawai</a>
+            </div>
+        </div>
+    </div>
+
+    <main role="main" class="p-4 h-100 flex-grow-1 overflow-auto">
+        <h2 class="fw-bold mb-4">@ViewData["title"]</h2>
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/sweetalert2/sweetalert2.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
