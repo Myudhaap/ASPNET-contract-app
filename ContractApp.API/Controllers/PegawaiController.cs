@@ -36,5 +36,13 @@ namespace ContractApp.API.Controllers
             var response = new BaseResponse<IEnumerable<PegawaiExcelRes>>("Success upload excel pegawai", 201, data);
             return Ok(response);
         }
+
+        [HttpGet("count")]
+        public async Task<IActionResult> CountPegawai()
+        {
+            PegawaiCountRes data = await _pegawaiService.CountPegawai();
+            var response = new BaseResponse<PegawaiCountRes>("Success upload excel pegawai", 200, data);
+            return Ok(response);
+        }
     }
 }

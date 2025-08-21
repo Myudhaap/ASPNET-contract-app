@@ -66,6 +66,18 @@ namespace ContractApp.API.Repositories.Impl
                 .FirstOrDefaultAsync(t => t.KodePegawai == id);
         }
 
+        public async Task<int> GetCountActive()
+        {
+            DateOnly target = DateOnly.FromDateTime(DateTime.Today);
+            return await _context.Pegawais.CountAsync(p => p.EndContract >= target);
+        }
+
+        public async Task<int> GetCountInActive()
+        {
+            DateOnly target = DateOnly.FromDateTime(DateTime.Today);
+            return await _context.Pegawais.CountAsync(p => p.EndContract < target);
+        }
+
         public async Task Update(Pegawai entity)
         {
             _context.Pegawais.Update(entity);

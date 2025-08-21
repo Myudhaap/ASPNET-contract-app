@@ -6,5 +6,7 @@ namespace ContractApp.API.Services
     {
         Task<IEnumerable<PegawaiRes>> FindListPegawai(DateOnly? startDate, DateOnly? endDate);
         Task<IEnumerable<PegawaiExcelRes>> SaveExcelPegawai(IFormFile fileStream);
+        Task<PegawaiCountRes> CountPegawai();
+
     }
 }
